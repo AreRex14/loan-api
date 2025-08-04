@@ -15,6 +15,9 @@ app.use(express.json());
 // If the server restarts, this data will be lost.
 let loanApplications = [];
 
+// Define valid statuses globally
+const VALID_STATUSES = ['Pending', 'Approved', 'Rejected'];
+
 // --- API Endpoints ---
 
 /**
@@ -57,6 +60,24 @@ app.post('/api/applications', (req, res) => {
     res.status(201).json(newApplication);
 });
 
+/**
+ * @route   GET /api/applications
+ * @desc    Get all loan applications
+ * @access  Public
+ */
+app.get('/api/applications', (req, res) => {
+    // Return the array of loan applications
+    // This will return all applications submitted so far
+
+    if (loanApplications.length === 0) {
+        console.log('No applications found.');
+    } else {
+        console.log('Found applications:', loanApplications.length);
+    }
+    
+    res.status(200).json(loanApplications);
+});
+
 
 /**
  * @route   GET /api/applications/:id
@@ -77,6 +98,32 @@ app.get('/api/applications/:id', (req, res) => {
 
     // If found, return the application data
     res.json(application);
+});
+
+/**
+ * @route   PUT /api/applications/:id
+ * @desc    Update the status of a loan application
+ * @access  Public
+ */
+app.put('/api/applications/:id', (req, res) => {
+    const applicationId = req.params.id;
+    const { status } = req.body;
+
+    if (!status || !VALID_STATUSES.includes(status)) {
+        return res.status(400).json({ message: `Status must be one of: ${VALID_STATUSES.join(', ')}` });
+    }
+
+    // Find the application
+    const application = loanApplications.find(app => app.id === applicationId);
+
+    if (!application) {
+        return res.status(404).json({ message: 'Application not found.' });
+    }
+
+    // Update status
+    application.status = status;
+
+    res.json({ message: 'Application status updated.', application });
 });
 
 
