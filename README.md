@@ -85,3 +85,7 @@ A simple Node.js/Express REST API for managing loan applications, using MongoDB 
 
 - Uses MongoDB database named `loanapi`
 - Collection: `loanapplications`
+
+## License
+
+WTFPL License. See [LICENSE](LICENSE) for details.
